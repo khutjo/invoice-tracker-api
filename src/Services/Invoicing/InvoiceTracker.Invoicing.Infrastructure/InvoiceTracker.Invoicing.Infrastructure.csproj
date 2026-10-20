@@ -1,0 +1,12 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <ItemGroup>
+    <FrameworkReference Include="Microsoft.AspNetCore.App" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\InvoiceTracker.Invoicing.Application\InvoiceTracker.Invoicing.Application.csproj" />
+    <ProjectReference Include="..\..\..\BuildingBlocks\InvoiceTracker.BuildingBlocks.Messaging\InvoiceTracker.BuildingBlocks.Messaging.csproj" />
+  </ItemGroup>
+
+</Project>

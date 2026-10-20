@@ -1,0 +1,43 @@
+<Solution>
+  <Folder Name="/src/" />
+  <Folder Name="/src/BuildingBlocks/">
+    <Project Path="src/BuildingBlocks/InvoiceTracker.BuildingBlocks.Contracts/InvoiceTracker.BuildingBlocks.Contracts.csproj" />
+    <Project Path="src/BuildingBlocks/InvoiceTracker.BuildingBlocks.Messaging/InvoiceTracker.BuildingBlocks.Messaging.csproj" />
+    <Project Path="src/BuildingBlocks/InvoiceTracker.BuildingBlocks.ServiceDefaults/InvoiceTracker.BuildingBlocks.ServiceDefaults.csproj" />
+  </Folder>
+  <Folder Name="/src/Gateway/">
+    <Project Path="src/Gateway/InvoiceTracker.Gateway/InvoiceTracker.Gateway.csproj" />
+  </Folder>
+  <Folder Name="/src/Services/" />
+  <Folder Name="/src/Services/Business/">
+    <Project Path="src/Services/Business/InvoiceTracker.Business.Api/InvoiceTracker.Business.Api.csproj" />
+    <Project Path="src/Services/Business/InvoiceTracker.Business.Application/InvoiceTracker.Business.Application.csproj" />
+    <Project Path="src/Services/Business/InvoiceTracker.Business.Domain/InvoiceTracker.Business.Domain.csproj" />
+    <Project Path="src/Services/Business/InvoiceTracker.Business.Infrastructure/InvoiceTracker.Business.Infrastructure.csproj" />
+  </Folder>
+  <Folder Name="/src/Services/Identity/">
+    <Project Path="src/Services/Identity/InvoiceTracker.Identity.Api/InvoiceTracker.Identity.Api.csproj" />
+    <Project Path="src/Services/Identity/InvoiceTracker.Identity.Infrastructure/InvoiceTracker.Identity.Infrastructure.csproj" />
+  </Folder>
+  <Folder Name="/src/Services/Invoicing/">
+    <Project Path="src/Services/Invoicing/InvoiceTracker.Invoicing.Api/InvoiceTracker.Invoicing.Api.csproj" />
+    <Project Path="src/Services/Invoicing/InvoiceTracker.Invoicing.Application/InvoiceTracker.Invoicing.Application.csproj" />
+    <Project Path="src/Services/Invoicing/InvoiceTracker.Invoicing.Domain/InvoiceTracker.Invoicing.Domain.csproj" />
+    <Project Path="src/Services/Invoicing/InvoiceTracker.Invoicing.Infrastructure/InvoiceTracker.Invoicing.Infrastructure.csproj" />
+  </Folder>
+  <Folder Name="/src/Services/Notification/">
+    <Project Path="src/Services/Notification/InvoiceTracker.Notification.Api/InvoiceTracker.Notification.Api.csproj" />
+    <Project Path="src/Services/Notification/InvoiceTracker.Notification.Infrastructure/InvoiceTracker.Notification.Infrastructure.csproj" />
+  </Folder>
+  <Folder Name="/tests/">
+    <Project Path="tests/InvoiceTracker.BuildingBlocks.Contracts.Tests/InvoiceTracker.BuildingBlocks.Contracts.Tests.csproj" />
+    <Project Path="tests/InvoiceTracker.Business.Application.Tests/InvoiceTracker.Business.Application.Tests.csproj" />
+    <Project Path="tests/InvoiceTracker.Business.Domain.Tests/InvoiceTracker.Business.Domain.Tests.csproj" />
+    <Project Path="tests/InvoiceTracker.Business.IntegrationTests/InvoiceTracker.Business.IntegrationTests.csproj" />
+    <Project Path="tests/InvoiceTracker.Identity.IntegrationTests/InvoiceTracker.Identity.IntegrationTests.csproj" />
+    <Project Path="tests/InvoiceTracker.Invoicing.Application.Tests/InvoiceTracker.Invoicing.Application.Tests.csproj" />
+    <Project Path="tests/InvoiceTracker.Invoicing.Domain.Tests/InvoiceTracker.Invoicing.Domain.Tests.csproj" />
+    <Project Path="tests/InvoiceTracker.Invoicing.IntegrationTests/InvoiceTracker.Invoicing.IntegrationTests.csproj" />
+    <Project Path="tests/InvoiceTracker.Notification.IntegrationTests/InvoiceTracker.Notification.IntegrationTests.csproj" />
+  </Folder>
+</Solution>
