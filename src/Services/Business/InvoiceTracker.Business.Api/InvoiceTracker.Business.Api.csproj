@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk.Web">
+﻿<Project Sdk="Microsoft.NET.Sdk.Web">
 
   <ItemGroup>
     <ProjectReference Include="..\InvoiceTracker.Business.Application\InvoiceTracker.Business.Application.csproj" />
@@ -6,10 +6,18 @@
     <ProjectReference Include="..\..\..\BuildingBlocks\InvoiceTracker.BuildingBlocks.ServiceDefaults\InvoiceTracker.BuildingBlocks.ServiceDefaults.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="10.0.13">
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+      <PrivateAssets>all</PrivateAssets>
+    </PackageReference>
+  </ItemGroup>
+
   <PropertyGroup>
     <TargetFramework>net10.0</TargetFramework>
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
+    <UserSecretsId>ea6702dd-78a5-444c-b1ac-433d1849cca6</UserSecretsId>
   </PropertyGroup>
 
 </Project>
