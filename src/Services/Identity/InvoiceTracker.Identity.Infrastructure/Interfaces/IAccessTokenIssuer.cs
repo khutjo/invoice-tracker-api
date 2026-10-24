@@ -1,4 +1,4 @@
-﻿using InvoiceTracker.Identity.Infrastructure.Persistence;
+using InvoiceTracker.Identity.Infrastructure.Persistence;
 using InvoiceTracker.Identity.Infrastructure.Tokens;
 
 namespace InvoiceTracker.Identity.Infrastructure.Interfaces;

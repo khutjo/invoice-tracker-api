@@ -1,4 +1,4 @@
-﻿namespace InvoiceTracker.Identity.Api.Models.Response;
+namespace InvoiceTracker.Identity.Api.Models.Response;
 
 public sealed record LoginResponse
 {

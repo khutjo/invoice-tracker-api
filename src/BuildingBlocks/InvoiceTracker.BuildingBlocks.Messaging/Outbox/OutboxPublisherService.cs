@@ -15,11 +15,11 @@ public sealed class OutboxPublisherService<TDbContext>(
 {
     private const int BatchSize = 50;
     private const int MaxErrorLength = 2000;
-    private static readonly TimeSpan Interval = TimeSpan.FromSeconds(2);
+    private static readonly TimeSpan _interval = TimeSpan.FromSeconds(2);
 
     protected override async Task ExecuteAsync(CancellationToken stoppingToken)
     {
-        using var timer = new PeriodicTimer(Interval, timeProvider);
+        using var timer = new PeriodicTimer(_interval, timeProvider);
 
         do
         {

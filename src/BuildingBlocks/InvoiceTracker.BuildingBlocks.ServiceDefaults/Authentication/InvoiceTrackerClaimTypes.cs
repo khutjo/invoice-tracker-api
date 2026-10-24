@@ -1,4 +1,4 @@
-﻿namespace InvoiceTracker.BuildingBlocks.ServiceDefaults.Authentication;
+namespace InvoiceTracker.BuildingBlocks.ServiceDefaults.Authentication;
 
 public static class InvoiceTrackerClaimTypes
 {

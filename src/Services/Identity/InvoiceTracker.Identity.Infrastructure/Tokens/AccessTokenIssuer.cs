@@ -1,4 +1,4 @@
-﻿using InvoiceTracker.BuildingBlocks.ServiceDefaults.Authentication;
+using InvoiceTracker.BuildingBlocks.ServiceDefaults.Authentication;
 using InvoiceTracker.Identity.Infrastructure.Interfaces;
 using InvoiceTracker.Identity.Infrastructure.Persistence;
 using Microsoft.Extensions.Options;
