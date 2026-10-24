@@ -1,16 +1,19 @@
+using InvoiceTracker.BuildingBlocks.Messaging.Outbox;
+using Microsoft.AspNetCore.DataProtection.EntityFrameworkCore;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 
 namespace InvoiceTracker.Identity.Infrastructure.Persistence;
 
-/// <summary>
-/// IdentityUserContext rather than IdentityDbContext: roles are a column on the user,
-/// so the Identity role tables are not needed.
-/// </summary>
 public sealed class IdentityServiceDbContext(DbContextOptions<IdentityServiceDbContext> options)
-    : IdentityUserContext<ApplicationUser, Guid>(options)
+    : IdentityUserContext<ApplicationUser, Guid>(options), IDataProtectionKeyContext
 {
+    public DbSet<RefreshToken> RefreshTokens => Set<RefreshToken>();
+
+    /// <summary>Keys that sign email verification tokens, kept here so links survive restarts.</summary>
+    public DbSet<DataProtectionKey> DataProtectionKeys => Set<DataProtectionKey>();
+
     protected override void ConfigureConventions(ModelConfigurationBuilder configurationBuilder)
     {
         configurationBuilder.Properties<Enum>().HaveConversion<string>().HaveMaxLength(32);
@@ -25,13 +28,9 @@ public sealed class IdentityServiceDbContext(DbContextOptions<IdentityServiceDbC
             user.ToTable("users");
             user.HasKey(u => u.Id).HasName("pk_users");
             user.Property(u => u.Id).HasColumnName("user_id");
-
             user.Property(u => u.FirstName).HasMaxLength(100);
             user.Property(u => u.LastName).HasMaxLength(100);
-
             user.HasIndex(u => u.BusinessId).HasDatabaseName("ix_users_business_id");
-
-            // Identity names these EmailIndex and UserNameIndex; rename to match the rest of the schema
             user.HasIndex(u => u.NormalizedEmail).HasDatabaseName("ix_users_normalized_email");
             user.HasIndex(u => u.NormalizedUserName).HasDatabaseName("uq_users_normalized_user_name");
         });
@@ -43,5 +42,15 @@ public sealed class IdentityServiceDbContext(DbContextOptions<IdentityServiceDbC
         });
         builder.Entity<IdentityUserLogin<Guid>>().ToTable("user_logins");
         builder.Entity<IdentityUserToken<Guid>>().ToTable("user_tokens");
+
+        builder.Entity<DataProtectionKey>(key =>
+        {
+            key.ToTable("data_protection_keys");
+            key.HasKey(k => k.Id).HasName("pk_data_protection_keys");
+            key.Property(k => k.Id).HasColumnName("data_protection_key_id");
+        });
+
+        builder.ApplyConfigurationsFromAssembly(typeof(IdentityServiceDbContext).Assembly);
+        builder.AddOutbox();
     }
 }
