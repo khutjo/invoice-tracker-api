@@ -433,3 +433,6 @@ FodyWeavers.xsd
 
 # Local secrets
 .env
+
+# Local logo store for the Business service
+App_Data/

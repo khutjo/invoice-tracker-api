@@ -13,7 +13,6 @@ Identity/
 │  ├─ Interfaces/         ILoginService, IRegisterService
 │  ├─ Models/Request/     LogInRequest, RegisterUserRequest, RefreshTokenRequest, VerifyEmailRequest (DataAnnotations)
 │  ├─ Models/Response/    LoginResponse, RefreshTokenResponse, RegisterUserResponse
-│  ├─ Options/            PortalOptions
 │  ├─ Exceptions/         LoginException, RegisterException, IdentityExceptionHandler (maps them to ProblemDetails)
 │  └─ InvoiceTracker.Identity.Api.http   manual requests for Rider
 └─ InvoiceTracker.Identity.Infrastructure/
@@ -52,8 +51,10 @@ Registration runs in one database transaction, so a user is never saved without 
 2. Generate an email confirmation token (bound to the user's security stamp, valid 24 hours).
 3. Write two rows to `outbox_messages`:
    - `BusinessRegistered`: Business creates the business profile from it.
-   - `EmailVerificationRequested`: Notification sends the link `{Portal:BaseUrl}{Portal:VerifyEmailPath}?userId=…&token=…`.
-     The portal screen posts `userId` and `token` to `POST /api/v1/auth/verify-email`.
+   - `EmailVerificationRequested`: carries `userId` and the Base64Url confirmation `token`, not a link.
+     Notification owns the portal URL: it builds the verify link (portal base URL + verify screen path,
+     with `userId` and `token` in the query string) and emails it. The portal screen posts `userId` and
+     `token` to `POST /api/v1/auth/verify-email`. Identity knows nothing about the portal.
 4. Commit.
 
 `OutboxPublisherService` (BuildingBlocks.Messaging) publishes unprocessed rows every 2 seconds to the
@@ -113,10 +114,8 @@ logins against someone's email cannot end their existing session.
 | `Jwt:KeyId` | appsettings.json | `identity-2026-10` |
 | `RabbitMq:HostName`, `Port`, `VirtualHost`, `UserName`, `ClientName` | appsettings.json | `localhost`, `5672`, `/`, `invoice-tracker`, `identity` |
 | `RabbitMq:Password` | user-secrets / `RabbitMq__Password` | same as `RABBITMQ_PASSWORD` in `.env` |
-| `Portal:BaseUrl` | appsettings.json / `Portal__BaseUrl` | `http://localhost:8080` |
-| `Portal:VerifyEmailPath` | appsettings.json | `/verify-email` (portal screen that calls `/verify-email`) |
 
-The app fails at startup if any `Jwt`, `RabbitMq` or `Portal` value is missing.
+The app fails at startup if any `Jwt` or `RabbitMq` value is missing.
 
 ## Database (`identity_db`)
 
@@ -148,3 +147,12 @@ dotnet test tests/InvoiceTracker.Identity.IntegrationTests
 CI (`.github/workflows/ci.yml`) runs these on every push and pull request to `main`, alongside the format check
 and a warnings-as-errors build.
 
+## Planned
+
+- Notification consumes `EmailVerificationRequested` and sends the link; Business consumes `BusinessRegistered`.
+- Resend-verification endpoint.
+- RabbitMQ in `/health/ready`.
+- Move the refresh token into an httpOnly cookie, as the spec describes.
+- JWKS endpoint (`/.well-known/jwks.json`) so services fetch the public key and keys can rotate without redeploying.
+- Owner invites an Accountant (F16).
+- Strict rate limits on `/api/v1/auth/*` at the gateway.

@@ -30,7 +30,6 @@ public sealed class IdentityApiFactory : WebApplicationFactory<Program>, IAsyncL
         builder.UseSetting("ConnectionStrings:IdentityDb", connectionString);
         builder.UseSetting("Jwt:SigningKey", Convert.ToBase64String(rsa.ExportPkcs8PrivateKey()));
         builder.UseSetting("RabbitMq:Password", "not-used-in-tests");
-        builder.UseSetting("Portal:BaseUrl", "http://portal.test");
 
         builder.ConfigureServices(services =>
         {

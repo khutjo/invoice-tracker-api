@@ -451,6 +451,83 @@ namespace InvoiceTracker.Business.Infrastructure.Persistence.Migrations
                     b.ToTable("customers", (string)null);
                 });
 
+            modelBuilder.Entity("InvoiceTracker.Business.Domain.ReferenceData.Bank", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasColumnName("bank_id");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)")
+                        .HasColumnName("name");
+
+                    b.Property<string>("UniversalBranchCode")
+                        .IsRequired()
+                        .HasMaxLength(6)
+                        .IsUnicode(false)
+                        .HasColumnType("char(6)")
+                        .HasColumnName("universal_branch_code")
+                        .IsFixedLength();
+
+                    b.HasKey("Id")
+                        .HasName("pk_banks");
+
+                    b.HasIndex("Name")
+                        .IsUnique()
+                        .HasDatabaseName("uq_banks_name");
+
+                    b.ToTable("banks", (string)null);
+                });
+
+            modelBuilder.Entity("InvoiceTracker.Business.Domain.ReferenceData.PostalCode", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasColumnName("postal_code_id");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("Code")
+                        .IsRequired()
+                        .HasMaxLength(4)
+                        .IsUnicode(false)
+                        .HasColumnType("char(4)")
+                        .HasColumnName("code")
+                        .IsFixedLength();
+
+                    b.Property<string>("Kind")
+                        .IsRequired()
+                        .HasMaxLength(32)
+                        .HasColumnType("nvarchar(32)")
+                        .HasColumnName("kind");
+
+                    b.Property<string>("Suburb")
+                        .IsRequired()
+                        .HasMaxLength(64)
+                        .HasColumnType("nvarchar(64)")
+                        .HasColumnName("suburb");
+
+                    b.Property<string>("Town")
+                        .IsRequired()
+                        .HasMaxLength(64)
+                        .HasColumnType("nvarchar(64)")
+                        .HasColumnName("town");
+
+                    b.HasKey("Id")
+                        .HasName("pk_postal_codes");
+
+                    b.HasIndex("Code")
+                        .HasDatabaseName("ix_postal_codes_code");
+
+                    b.ToTable("postal_codes", (string)null);
+                });
+
             modelBuilder.Entity("InvoiceTracker.Business.Domain.Businesses.BusinessProfile", b =>
                 {
                     b.HasOne("InvoiceTracker.Business.Domain.Common.Address", "Address")

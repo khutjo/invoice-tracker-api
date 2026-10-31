@@ -4,7 +4,6 @@ using InvoiceTracker.BuildingBlocks.Messaging.Outbox;
 using InvoiceTracker.BuildingBlocks.Messaging.Serialization;
 using InvoiceTracker.Identity.Api.Models.Response;
 using InvoiceTracker.Identity.Infrastructure.Persistence;
-using Microsoft.AspNetCore.WebUtilities;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -56,10 +55,9 @@ public sealed class AuthApiClient(IdentityApiFactory factory)
         response.EnsureSuccessStatusCode();
         var registered = (await response.Content.ReadFromJsonAsync<RegisterUserResponse>())!;
 
-        var link = await GetVerificationEventAsync(registered.UserId);
-        var token = QueryHelpers.ParseQuery(new Uri(link.VerificationUrl).Query)["token"].ToString();
+        var verification = await GetVerificationEventAsync(registered.UserId);
 
-        (await VerifyEmailAsync(registered.UserId, token)).EnsureSuccessStatusCode();
+        (await VerifyEmailAsync(registered.UserId, verification.Token)).EnsureSuccessStatusCode();
         return registered;
     }
 

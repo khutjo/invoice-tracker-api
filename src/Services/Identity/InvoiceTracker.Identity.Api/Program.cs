@@ -1,7 +1,6 @@
 using InvoiceTracker.BuildingBlocks.ServiceDefaults.HealthChecks;
 using InvoiceTracker.Identity.Api.Exceptions;
 using InvoiceTracker.Identity.Api.Interfaces;
-using InvoiceTracker.Identity.Api.Options;
 using InvoiceTracker.Identity.Api.Services;
 using InvoiceTracker.Identity.Infrastructure;
 using Scalar.AspNetCore;
@@ -13,11 +12,6 @@ builder.Services.AddOpenApi();
 builder.Services.AddProblemDetails();
 builder.Services.AddExceptionHandler<IdentityExceptionHandler>();
 builder.Services.AddIdentityInfrastructure(builder.Configuration);
-
-builder.Services.AddOptions<PortalOptions>()
-    .BindConfiguration(PortalOptions.SectionName)
-    .ValidateDataAnnotations()
-    .ValidateOnStart();
 
 builder.Services.AddScoped<ILoginService, LoginService>();
 builder.Services.AddScoped<IRegisterService, RegisterService>();
