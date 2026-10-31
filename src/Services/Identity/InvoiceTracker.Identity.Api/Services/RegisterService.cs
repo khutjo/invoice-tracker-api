@@ -5,19 +5,16 @@ using InvoiceTracker.Identity.Api.Exceptions;
 using InvoiceTracker.Identity.Api.Interfaces;
 using InvoiceTracker.Identity.Api.Models.Request;
 using InvoiceTracker.Identity.Api.Models.Response;
-using InvoiceTracker.Identity.Api.Options;
 using InvoiceTracker.Identity.Infrastructure.Persistence;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.WebUtilities;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Options;
 
 namespace InvoiceTracker.Identity.Api.Services;
 
 public sealed class RegisterService(
     UserManager<ApplicationUser> userManager,
     IdentityServiceDbContext dbContext,
-    IOptions<PortalOptions> portalOptions,
     TimeProvider timeProvider) : IRegisterService
 {
     public async Task<RegisterUserResponse> RegisterUserAsync(RegisterUserRequest request, CancellationToken cancellationToken)
@@ -68,7 +65,7 @@ public sealed class RegisterService(
                 UserId = newUser.Id,
                 Email = request.Email,
                 FirstName = request.FirstName,
-                VerificationUrl = BuildVerificationUrl(newUser.Id, token)
+                Token = EncodeToken(token)
             });
 
             await dbContext.SaveChangesAsync(cancellationToken);
@@ -102,16 +99,9 @@ public sealed class RegisterService(
         }
     }
 
-    private string BuildVerificationUrl(Guid userId, string token)
+    private static string EncodeToken(string token)
     {
-        var portal = portalOptions.Value;
-        var verifyScreen = $"{portal.BaseUrl.TrimEnd('/')}/{portal.VerifyEmailPath.TrimStart('/')}";
-
-        return QueryHelpers.AddQueryString(verifyScreen, new Dictionary<string, string?>
-        {
-            ["userId"] = userId.ToString(),
-            ["token"] = WebEncoders.Base64UrlEncode(Encoding.UTF8.GetBytes(token))
-        });
+        return WebEncoders.Base64UrlEncode(Encoding.UTF8.GetBytes(token));
     }
 
     private static bool TryDecodeToken(string encoded, out string token)

@@ -32,7 +32,8 @@ public sealed class AuthEndpointsTests(IdentityApiFactory factory) : IClassFixtu
         eventTypes.ShouldBe(new[] { nameof(BusinessRegistered), nameof(EmailVerificationRequested) }, ignoreOrder: true);
 
         var verification = await _api.GetVerificationEventAsync(body.UserId);
-        verification.VerificationUrl.ShouldStartWith("http://portal.test/verify-email?userId=");
+        verification.UserId.ShouldBe(body.UserId);
+        verification.Token.ShouldNotBeNullOrWhiteSpace();
     }
 
     [Fact]

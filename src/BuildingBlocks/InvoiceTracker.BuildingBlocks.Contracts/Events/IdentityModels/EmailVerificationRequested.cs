@@ -17,7 +17,11 @@ public sealed record EmailVerificationRequested : IntegrationEvent
         get; init;
     }
 
-    public required string VerificationUrl
+    /// <summary>
+    /// Base64Url email confirmation token. Notification builds the portal link from UserId and Token;
+    /// the portal posts both to POST /api/v1/auth/verify-email.
+    /// </summary>
+    public required string Token
     {
         get; init;
     }
