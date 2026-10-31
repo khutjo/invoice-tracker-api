@@ -1,5 +1,4 @@
 using System.ComponentModel.DataAnnotations;
-using InvoiceTracker.Business.Domain.Businesses;
 
 namespace InvoiceTracker.Business.Api.Models.Request;
 

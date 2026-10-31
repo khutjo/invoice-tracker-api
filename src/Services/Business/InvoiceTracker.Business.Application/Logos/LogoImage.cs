@@ -8,17 +8,17 @@ public static class LogoImage
 {
     public const long MaxSizeBytes = 1024 * 1024;
 
-    private static readonly byte[] PngSignature = [0x89, 0x50, 0x4E, 0x47, 0x0D, 0x0A, 0x1A, 0x0A];
-    private static readonly byte[] JpegSignature = [0xFF, 0xD8, 0xFF];
+    private static readonly byte[] _pngSignature = [0x89, 0x50, 0x4E, 0x47, 0x0D, 0x0A, 0x1A, 0x0A];
+    private static readonly byte[] _jpegSignature = [0xFF, 0xD8, 0xFF];
 
     public static LogoImageType? Detect(ReadOnlySpan<byte> content)
     {
-        if (content.StartsWith(PngSignature))
+        if (content.StartsWith(_pngSignature))
         {
             return LogoImageType.Png;
         }
 
-        if (content.StartsWith(JpegSignature))
+        if (content.StartsWith(_jpegSignature))
         {
             return LogoImageType.Jpeg;
         }
