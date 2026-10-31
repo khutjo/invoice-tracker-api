@@ -1,0 +1,76 @@
+# Log in through Identity first (InvoiceTracker.Identity.Api.http) and paste the accessToken here.
+@Business_HostAddress = http://localhost:5224
+@accessToken = paste-access-token-here
+
+### Create the profile for the business in the token (Owner)
+POST {{Business_HostAddress}}/api/v1/business
+Authorization: Bearer {{accessToken}}
+Content-Type: application/json
+
+{
+  "name": "Mokoena Plumbing",
+  "registrationNumber": "2019/123456/07",
+  "vatNumber": "4123456789",
+  "supportEmail": "accounts@mokoenaplumbing.co.za",
+  "contactNumber": { "number": "+27821234567", "type": "Mobile" },
+  "address": {
+    "line1": "12 Jan Smuts Avenue",
+    "suburb": "Parktown",
+    "city": "Johannesburg",
+    "postalCode": "2193"
+  },
+  "bankDetails": {
+    "bankName": "Example Bank",
+    "accountHolder": "Mokoena Plumbing (Pty) Ltd",
+    "accountNumber": "1234567890",
+    "accountType": "Cheque",
+    "branchCode": "470010"
+  }
+}
+
+### Read the profile (any role); copy "version" for the updates below
+GET {{Business_HostAddress}}/api/v1/business
+Authorization: Bearer {{accessToken}}
+
+### Update the profile (Owner); leaving out "bankDetails" removes them
+PUT {{Business_HostAddress}}/api/v1/business
+Authorization: Bearer {{accessToken}}
+Content-Type: application/json
+
+{
+  "name": "Mokoena Plumbing & Gas",
+  "vatNumber": "4123456789",
+  "supportEmail": "accounts@mokoenaplumbing.co.za",
+  "version": "paste-version-here"
+}
+
+### Read settings
+GET {{Business_HostAddress}}/api/v1/business/settings
+Authorization: Bearer {{accessToken}}
+
+### Save settings (Owner); send the same version twice to see the 409
+PUT {{Business_HostAddress}}/api/v1/business/settings
+Authorization: Bearer {{accessToken}}
+Content-Type: application/json
+
+{
+  "defaultPaymentTermsDays": 14,
+  "timeZone": "Africa/Johannesburg",
+  "version": "paste-version-here"
+}
+
+### Upload a logo (Owner): PNG or JPEG, at most 1 MB
+PUT {{Business_HostAddress}}/api/v1/business/logo
+Authorization: Bearer {{accessToken}}
+Content-Type: multipart/form-data; boundary=logo
+
+--logo
+Content-Disposition: form-data; name="file"; filename="logo.png"
+Content-Type: image/png
+
+< ./logo.png
+--logo--
+
+### Download the logo
+GET {{Business_HostAddress}}/api/v1/business/logo
+Authorization: Bearer {{accessToken}}
