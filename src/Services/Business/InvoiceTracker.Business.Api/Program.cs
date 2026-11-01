@@ -1,6 +1,10 @@
 using System.Text.Json.Serialization;
+using InvoiceTracker.BuildingBlocks.Contracts.Events.IdentityModels;
+using InvoiceTracker.BuildingBlocks.Messaging;
+using InvoiceTracker.BuildingBlocks.Messaging.RabbitMq;
 using InvoiceTracker.BuildingBlocks.ServiceDefaults.Authentication;
 using InvoiceTracker.BuildingBlocks.ServiceDefaults.HealthChecks;
+using InvoiceTracker.Business.Api.Consumers;
 using InvoiceTracker.Business.Api.Exceptions;
 using InvoiceTracker.Business.Api.Interfaces;
 using InvoiceTracker.Business.Api.OpenApi;
@@ -22,6 +26,10 @@ builder.Services.AddBusinessInfrastructure(builder.Configuration);
 builder.Services.AddScoped<IBusinessService, BusinessService>();
 builder.Services.AddScoped<ReferenceDataValidator>();
 builder.Services.AddScoped<ILookupService, LookupService>();
+
+builder.Services.AddMessaging();
+builder.Services.AddEventConsumer(RabbitMqTopology.BusinessQueue)
+    .AddHandler<BusinessRegistered, BusinessRegisteredHandler>();
 
 var app = builder.Build();
 
