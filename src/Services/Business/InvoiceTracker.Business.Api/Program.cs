@@ -26,6 +26,7 @@ builder.Services.AddBusinessInfrastructure(builder.Configuration);
 builder.Services.AddScoped<IBusinessService, BusinessService>();
 builder.Services.AddScoped<ReferenceDataValidator>();
 builder.Services.AddScoped<ILookupService, LookupService>();
+builder.Services.AddScoped<ICustomerService, CustomerService>();
 
 builder.Services.AddMessaging();
 builder.Services.AddEventConsumer(RabbitMqTopology.BusinessQueue)
