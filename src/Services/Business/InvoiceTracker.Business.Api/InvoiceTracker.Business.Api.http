@@ -74,3 +74,76 @@ Content-Type: image/png
 ### Download the logo
 GET {{Business_HostAddress}}/api/v1/business/logo
 Authorization: Bearer {{accessToken}}
+
+### ---------- Customers (Owner or Accountant) ----------
+@customerId = paste-customer-id-here
+
+### Create a customer: 201 with a Location header
+POST {{Business_HostAddress}}/api/v1/customers
+Authorization: Bearer {{accessToken}}
+Content-Type: application/json
+
+{
+  "name": "Dlamini Builders",
+  "email": "accounts@dlaminibuilders.co.za",
+  "contactNumber": { "number": "+27831234567", "type": "Work" },
+  "billingAddress": {
+    "line1": "1 Long Street",
+    "suburb": "Cape Town City Centre",
+    "city": "Cape Town",
+    "postalCode": "8001"
+  },
+  "vatNumber": "4987654321",
+  "customerReference": "DLA001"
+}
+
+### Unknown postal code: 400 with billingAddress.postalCode
+POST {{Business_HostAddress}}/api/v1/customers
+Authorization: Bearer {{accessToken}}
+Content-Type: application/json
+
+{
+  "name": "Nowhere Traders",
+  "email": "hello@nowhere.co.za",
+  "billingAddress": {
+    "line1": "1 Main Road",
+    "suburb": "Nowhere",
+    "city": "Nowhere",
+    "postalCode": "0000"
+  }
+}
+
+### List and search (paged); pageSize above 100 gives 400
+GET {{Business_HostAddress}}/api/v1/customers?search=dlamini&page=1&pageSize=20
+Authorization: Bearer {{accessToken}}
+
+### Read one customer; copy "version" for the update
+GET {{Business_HostAddress}}/api/v1/customers/{{customerId}}
+Authorization: Bearer {{accessToken}}
+
+### Update (full replace); leaving out contactNumber removes it. Send the same version twice to see the 409
+PUT {{Business_HostAddress}}/api/v1/customers/{{customerId}}
+Authorization: Bearer {{accessToken}}
+Content-Type: application/json
+
+{
+  "name": "Dlamini Builders (Pty) Ltd",
+  "email": "accounts@dlaminibuilders.co.za",
+  "billingAddress": {
+    "line1": "3 Long Street",
+    "suburb": "Cape Town City Centre",
+    "city": "Cape Town",
+    "postalCode": "8001"
+  },
+  "vatNumber": "4987654321",
+  "customerReference": "DLA001",
+  "version": "paste-version-here"
+}
+
+### Archive: 204, and 204 again on repeat
+DELETE {{Business_HostAddress}}/api/v1/customers/{{customerId}}
+Authorization: Bearer {{accessToken}}
+
+### Archived customers only show up when asked for
+GET {{Business_HostAddress}}/api/v1/customers?includeArchived=true
+Authorization: Bearer {{accessToken}}
