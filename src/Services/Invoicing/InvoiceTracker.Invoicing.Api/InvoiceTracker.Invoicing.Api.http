@@ -1,0 +1,83 @@
+# Log in through Identity first (InvoiceTracker.Identity.Api.http) and paste the accessToken here.
+# Invoicing checks the customer with the Business API, so run Business too and use one of its customer ids.
+@Invoicing_HostAddress = http://localhost:5073
+@accessToken = paste-access-token-here
+@customerId = paste-customer-id-here
+@invoiceId = paste-invoice-id-here
+@version = paste-version-here
+
+### Create a draft
+POST {{Invoicing_HostAddress}}/api/v1/invoices
+Authorization: Bearer {{accessToken}}
+Content-Type: application/json
+
+{
+  "customerId": "{{customerId}}",
+  "paymentTermsDays": 30,
+  "lines": [
+    { "description": "Call-out fee", "quantity": 1, "unitPrice": 450.00, "vatRate": 0.15 },
+    { "description": "Labour (hours)", "quantity": 2.5, "unitPrice": 380.00, "vatRate": 0.15 },
+    { "description": "Rounding check", "quantity": 1, "unitPrice": 0.03, "vatRate": 0.15 }
+  ]
+}
+
+### List invoices (newest first)
+GET {{Invoicing_HostAddress}}/api/v1/invoices?page=1&pageSize=20
+Authorization: Bearer {{accessToken}}
+
+### List drafts for one customer
+GET {{Invoicing_HostAddress}}/api/v1/invoices?status=Draft&customerId={{customerId}}
+Authorization: Bearer {{accessToken}}
+
+### Read one invoice with lines, payments and timeline
+GET {{Invoicing_HostAddress}}/api/v1/invoices/{{invoiceId}}
+Authorization: Bearer {{accessToken}}
+
+### Edit the draft (send the version from the last read)
+PUT {{Invoicing_HostAddress}}/api/v1/invoices/{{invoiceId}}
+Authorization: Bearer {{accessToken}}
+Content-Type: application/json
+
+{
+  "customerId": "{{customerId}}",
+  "paymentTermsDays": 14,
+  "version": "{{version}}",
+  "lines": [
+    { "description": "Call-out fee", "quantity": 1, "unitPrice": 450.00, "vatRate": 0.15 },
+    { "description": "Geyser element", "quantity": 1, "unitPrice": 1299.99, "vatRate": 0.15 }
+  ]
+}
+
+### Send it: number, issue date and due date are set
+POST {{Invoicing_HostAddress}}/api/v1/invoices/{{invoiceId}}/send
+Authorization: Bearer {{accessToken}}
+
+### Send again: 409, only a draft can be sent
+POST {{Invoicing_HostAddress}}/api/v1/invoices/{{invoiceId}}/send
+Authorization: Bearer {{accessToken}}
+
+### Delete a sent invoice: 409
+DELETE {{Invoicing_HostAddress}}/api/v1/invoices/{{invoiceId}}
+Authorization: Bearer {{accessToken}}
+
+### Too many decimals: 400 with lines[0].unitPrice
+POST {{Invoicing_HostAddress}}/api/v1/invoices
+Authorization: Bearer {{accessToken}}
+Content-Type: application/json
+
+{
+  "customerId": "{{customerId}}",
+  "lines": [
+    { "description": "Bad price", "quantity": 1, "unitPrice": 10.005 }
+  ]
+}
+
+### Unknown or another business's customer: 400 on customerId
+POST {{Invoicing_HostAddress}}/api/v1/invoices
+Authorization: Bearer {{accessToken}}
+Content-Type: application/json
+
+{
+  "customerId": "00000000-0000-0000-0000-000000000001",
+  "lines": []
+}

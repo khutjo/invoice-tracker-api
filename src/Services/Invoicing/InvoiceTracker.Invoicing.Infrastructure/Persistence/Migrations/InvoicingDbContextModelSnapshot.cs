@@ -110,6 +110,10 @@ namespace InvoiceTracker.Invoicing.Infrastructure.Persistence.Migrations
                         .HasColumnType("datetime2")
                         .HasColumnName("modified_at");
 
+                    b.Property<int>("PaymentTermsDays")
+                        .HasColumnType("int")
+                        .HasColumnName("payment_terms_days");
+
                     b.Property<byte[]>("RowVersion")
                         .IsConcurrencyToken()
                         .IsRequired()
@@ -211,6 +215,10 @@ namespace InvoiceTracker.Invoicing.Infrastructure.Persistence.Migrations
                         .HasColumnType("uniqueidentifier")
                         .HasColumnName("invoice_id");
 
+                    b.Property<int>("LineNumber")
+                        .HasColumnType("int")
+                        .HasColumnName("line_number");
+
                     b.Property<decimal>("LineTotal")
                         .HasPrecision(18, 2)
                         .HasColumnType("decimal(18,2)")
@@ -238,6 +246,26 @@ namespace InvoiceTracker.Invoicing.Infrastructure.Persistence.Migrations
                         .HasDatabaseName("ix_invoice_lines_invoice_id");
 
                     b.ToTable("invoice_lines", (string)null);
+                });
+
+            modelBuilder.Entity("InvoiceTracker.Invoicing.Domain.Invoices.InvoiceNumberSequence", b =>
+                {
+                    b.Property<Guid>("BusinessId")
+                        .HasColumnType("uniqueidentifier")
+                        .HasColumnName("business_id");
+
+                    b.Property<int>("Year")
+                        .HasColumnType("int")
+                        .HasColumnName("year");
+
+                    b.Property<int>("LastNumber")
+                        .HasColumnType("int")
+                        .HasColumnName("last_number");
+
+                    b.HasKey("BusinessId", "Year")
+                        .HasName("pk_invoice_number_sequences");
+
+                    b.ToTable("invoice_number_sequences", (string)null);
                 });
 
             modelBuilder.Entity("InvoiceTracker.Invoicing.Domain.Invoices.Payment", b =>
@@ -292,6 +320,68 @@ namespace InvoiceTracker.Invoicing.Infrastructure.Persistence.Migrations
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired()
                         .HasConstraintName("fk_invoice_documents_invoices");
+                });
+
+            modelBuilder.Entity("InvoiceTracker.Invoicing.Domain.Invoices.Invoice", b =>
+                {
+                    b.OwnsOne("InvoiceTracker.Invoicing.Domain.Invoices.BilledCustomer", "BilledCustomer", b1 =>
+                        {
+                            b1.Property<Guid>("InvoiceId")
+                                .HasColumnType("uniqueidentifier")
+                                .HasColumnName("invoice_id");
+
+                            b1.Property<string>("AddressLine1")
+                                .HasMaxLength(200)
+                                .HasColumnType("nvarchar(200)")
+                                .HasColumnName("billed_customer_address_line1");
+
+                            b1.Property<string>("AddressLine2")
+                                .HasMaxLength(200)
+                                .HasColumnType("nvarchar(200)")
+                                .HasColumnName("billed_customer_address_line2");
+
+                            b1.Property<string>("City")
+                                .HasMaxLength(100)
+                                .HasColumnType("nvarchar(100)")
+                                .HasColumnName("billed_customer_city");
+
+                            b1.Property<string>("Email")
+                                .IsRequired()
+                                .HasMaxLength(256)
+                                .HasColumnType("nvarchar(256)")
+                                .HasColumnName("billed_customer_email");
+
+                            b1.Property<string>("Name")
+                                .IsRequired()
+                                .HasMaxLength(200)
+                                .HasColumnType("nvarchar(200)")
+                                .HasColumnName("billed_customer_name");
+
+                            b1.Property<string>("PostalCode")
+                                .HasMaxLength(4)
+                                .HasColumnType("nvarchar(4)")
+                                .HasColumnName("billed_customer_postal_code");
+
+                            b1.Property<string>("Suburb")
+                                .HasMaxLength(100)
+                                .HasColumnType("nvarchar(100)")
+                                .HasColumnName("billed_customer_suburb");
+
+                            b1.Property<string>("VatNumber")
+                                .HasMaxLength(10)
+                                .HasColumnType("nvarchar(10)")
+                                .HasColumnName("billed_customer_vat_number");
+
+                            b1.HasKey("InvoiceId");
+
+                            b1.ToTable("invoices");
+
+                            b1.WithOwner()
+                                .HasForeignKey("InvoiceId")
+                                .HasConstraintName("fk_invoices_invoices_invoice_id");
+                        });
+
+                    b.Navigation("BilledCustomer");
                 });
 
             modelBuilder.Entity("InvoiceTracker.Invoicing.Domain.Invoices.InvoiceEvent", b =>
