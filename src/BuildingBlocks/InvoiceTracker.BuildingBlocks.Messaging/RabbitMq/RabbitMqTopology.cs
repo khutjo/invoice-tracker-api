@@ -6,11 +6,13 @@ namespace InvoiceTracker.BuildingBlocks.Messaging.RabbitMq;
 public static class RabbitMqTopology
 {
     public const string Exchange = "invoice-tracker.events";
+    public const string BusinessQueue = "business.events";
+    public const string NotificationQueue = "notification.events";
 
     public static readonly IReadOnlyDictionary<string, string[]> Queues = new Dictionary<string, string[]>
     {
-        ["business.events"] = [nameof(BusinessRegistered)],
-        ["notification.events"] = [nameof(EmailVerificationRequested)]
+        [BusinessQueue] = [nameof(BusinessRegistered)],
+        [NotificationQueue] = [nameof(EmailVerificationRequested)]
     };
 
     public static async Task DeclareAsync(IChannel channel, CancellationToken cancellationToken)

@@ -1,10 +1,10 @@
 # Run with the gutter icons in Rider. Register once, then log in, refresh and log out.
 # Paste the refreshToken from the login response into @refreshToken.
 @baseUrl = http://localhost:5067
-@refreshToken = paste-from-login-response
-# From the verificationUrl in the EmailVerificationRequested message (RabbitMQ UI, queue notification.events)
-@userId = paste-user-id
-@verifyToken = paste-token
+@refreshToken = 7ACd7A3im-kKkuydbGs6nndMh_wm8py-cGZQY82PHM8
+# userId and token from the EmailVerificationRequested message (RabbitMQ UI, queue notification.events)
+@userId = 1742f264-965e-4afe-9f05-08df31f7a34f
+@verifyToken = Q2ZESjhNdHNUK0MrWGNwQ2liSnlXVGxObjN5MkdFWS9Ldm1uWUtocEhBbXZOT0x6cVM1bmZXcExXNGs2U2R3c2VTVTd4RGRzdUNaS096ZURFNXl5QUo0SEQ0MnZQNDRTTERFL0hHOVlTUVVjdzd1cDZPbUJYTEUraUpSbUYyNHJXdmNza0RoOExXSUZTSFBnbnJEOU5adFdjWEpXQmZNVElEUmtiWEZ5RklEVFlsYk1RWjB1VjJyeVF4R2FlVDZjdDZFTUl6cFFoMHNqc3oyUllQaEhPSExldXdkS3dUSjMyMDRoc05kLzhRT3p6ZmdkTkMvS0QzWk9hTXFPSGlFVkhHNXdVQT09
 
 ### Register a business and its Owner
 POST {{baseUrl}}/api/v1/auth/register
