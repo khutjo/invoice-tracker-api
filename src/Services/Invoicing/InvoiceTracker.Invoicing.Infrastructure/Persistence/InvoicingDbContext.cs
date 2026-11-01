@@ -9,6 +9,7 @@ public sealed class InvoicingDbContext(DbContextOptions<InvoicingDbContext> opti
     // Aggregate roots only: lines, payments and events are reached through Invoice.
     public DbSet<Invoice> Invoices => Set<Invoice>();
     public DbSet<InvoiceDocument> InvoiceDocuments => Set<InvoiceDocument>();
+    public DbSet<InvoiceNumberSequence> InvoiceNumberSequences => Set<InvoiceNumberSequence>();
 
     protected override void ConfigureConventions(ModelConfigurationBuilder configurationBuilder)
     {

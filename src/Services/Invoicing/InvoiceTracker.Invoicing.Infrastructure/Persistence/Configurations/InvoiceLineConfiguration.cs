@@ -17,6 +17,9 @@ internal sealed class InvoiceLineConfiguration : IEntityTypeConfiguration<Invoic
         builder.Property(l => l.Quantity).HasPrecision(18, 3);
         builder.Property(l => l.VatRate).HasPrecision(5, 4);
 
+        // Worked out from LineTotal and VatRate, not stored
+        builder.Ignore(l => l.VatAmount);
+
         builder.HasIndex(l => l.InvoiceId).HasDatabaseName("ix_invoice_lines_invoice_id");
     }
 }
