@@ -22,6 +22,50 @@ namespace InvoiceTracker.Invoicing.Infrastructure.Persistence.Migrations
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
 
+            modelBuilder.Entity("InvoiceTracker.BuildingBlocks.Messaging.Outbox.OutboxMessage", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .HasColumnType("uniqueidentifier")
+                        .HasColumnName("outbox_message_id");
+
+                    b.Property<int>("Attempts")
+                        .HasColumnType("int")
+                        .HasColumnName("attempts");
+
+                    b.Property<string>("Error")
+                        .HasMaxLength(2000)
+                        .HasColumnType("nvarchar(2000)")
+                        .HasColumnName("error");
+
+                    b.Property<DateTime>("OccurredAt")
+                        .HasColumnType("datetime2")
+                        .HasColumnName("occurred_at");
+
+                    b.Property<string>("Payload")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)")
+                        .HasColumnName("payload");
+
+                    b.Property<DateTime?>("ProcessedAt")
+                        .HasColumnType("datetime2")
+                        .HasColumnName("processed_at");
+
+                    b.Property<string>("Type")
+                        .IsRequired()
+                        .HasMaxLength(200)
+                        .HasColumnType("nvarchar(200)")
+                        .HasColumnName("type");
+
+                    b.HasKey("Id")
+                        .HasName("pk_outbox_messages");
+
+                    b.HasIndex("OccurredAt")
+                        .HasDatabaseName("ix_outbox_messages_unprocessed")
+                        .HasFilter("[processed_at] IS NULL");
+
+                    b.ToTable("outbox_messages", (string)null);
+                });
+
             modelBuilder.Entity("InvoiceTracker.Invoicing.Domain.Documents.InvoiceDocument", b =>
                 {
                     b.Property<Guid>("Id")

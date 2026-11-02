@@ -1,5 +1,6 @@
 using System.Security.Cryptography;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.IdentityModel.JsonWebTokens;
@@ -37,6 +38,20 @@ public static class JwtAuthenticationExtensions
                     NameClaimType = JwtRegisteredClaimNames.Sub,
                     RoleClaimType = InvoiceTrackerClaimTypes.Role,
                     ClockSkew = TimeSpan.FromSeconds(30)
+                };
+
+                options.Events = new JwtBearerEvents
+                {
+                    OnMessageReceived = context =>
+                    {
+                        var accessToken = context.Request.Query["access_token"].ToString();
+                        if (!string.IsNullOrEmpty(accessToken) && context.Request.Path.StartsWithSegments("/hubs"))
+                        {
+                            context.Token = accessToken;
+                        }
+
+                        return Task.CompletedTask;
+                    }
                 };
             });
 

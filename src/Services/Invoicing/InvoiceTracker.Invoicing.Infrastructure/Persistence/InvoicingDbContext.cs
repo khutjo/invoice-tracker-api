@@ -1,3 +1,4 @@
+using InvoiceTracker.BuildingBlocks.Messaging.Outbox;
 using InvoiceTracker.Invoicing.Domain.Documents;
 using InvoiceTracker.Invoicing.Domain.Invoices;
 using Microsoft.EntityFrameworkCore;
@@ -20,5 +21,7 @@ public sealed class InvoicingDbContext(DbContextOptions<InvoicingDbContext> opti
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         modelBuilder.ApplyConfigurationsFromAssembly(typeof(InvoicingDbContext).Assembly);
+
+        modelBuilder.AddOutbox();
     }
 }

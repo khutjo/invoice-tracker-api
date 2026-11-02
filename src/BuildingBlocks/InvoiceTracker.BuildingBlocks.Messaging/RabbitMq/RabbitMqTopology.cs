@@ -1,4 +1,5 @@
 using InvoiceTracker.BuildingBlocks.Contracts.Events.IdentityModels;
+using InvoiceTracker.BuildingBlocks.Contracts.Events.InvoicingModels;
 using RabbitMQ.Client;
 
 namespace InvoiceTracker.BuildingBlocks.Messaging.RabbitMq;
@@ -12,7 +13,7 @@ public static class RabbitMqTopology
     public static readonly IReadOnlyDictionary<string, string[]> Queues = new Dictionary<string, string[]>
     {
         [BusinessQueue] = [nameof(BusinessRegistered)],
-        [NotificationQueue] = [nameof(EmailVerificationRequested)]
+        [NotificationQueue] = [nameof(EmailVerificationRequested), nameof(InvoiceSent)]
     };
 
     public static async Task DeclareAsync(IChannel channel, CancellationToken cancellationToken)
