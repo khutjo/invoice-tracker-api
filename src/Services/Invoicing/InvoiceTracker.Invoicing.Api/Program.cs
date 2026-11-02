@@ -20,6 +20,7 @@ builder.Services.AddJwtAuthentication(builder.Configuration);
 builder.Services.AddInvoicingInfrastructure(builder.Configuration);
 
 builder.Services.AddScoped<IInvoiceService, InvoiceService>();
+builder.Services.AddScoped<IDashboardService, DashboardService>();
 
 var app = builder.Build();
 

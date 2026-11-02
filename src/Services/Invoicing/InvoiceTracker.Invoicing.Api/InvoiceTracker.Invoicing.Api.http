@@ -81,3 +81,7 @@ Content-Type: application/json
   "customerId": "00000000-0000-0000-0000-000000000001",
   "lines": []
 }
+
+### Dashboard tiles for the caller's business
+GET {{Invoicing_HostAddress}}/api/v1/dashboard
+Authorization: Bearer {{accessToken}}
