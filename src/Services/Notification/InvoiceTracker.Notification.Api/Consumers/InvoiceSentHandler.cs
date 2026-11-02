@@ -44,7 +44,7 @@ public sealed class InvoiceSentHandler(
         }
         catch (DbUpdateException ex) when (ex.InnerException is SqlException { Number: 2601 or 2627 })
         {
-           logger.LogInformation("InvoiceSent notification for {InvoiceId} was created by a concurrent delivery; skipping {EventId}",
+            logger.LogInformation("InvoiceSent notification for {InvoiceId} was created by a concurrent delivery; skipping {EventId}",
                 integrationEvent.InvoiceId, integrationEvent.EventId);
             return;
         }
