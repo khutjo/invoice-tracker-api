@@ -1,0 +1,8 @@
+**/bin/
+**/obj/
+.git
+.idea
+.env
+tests/
+**/App_Data/
+*.user
