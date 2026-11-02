@@ -20,6 +20,8 @@ public sealed class NotificationDbContext(DbContextOptions<NotificationDbContext
             notification.Property(n => n.Id).HasColumnName("notification_id");
 
             notification.Property(n => n.Recipient).HasMaxLength(256);
+            notification.Property(n => n.InvoiceNumber).HasMaxLength(32);
+            notification.Property(n => n.CustomerName).HasMaxLength(200);
 
             // A reminder stage is created once per invoice, however often the event is redelivered
             notification.HasIndex(n => new { n.InvoiceId, n.NotificationType })

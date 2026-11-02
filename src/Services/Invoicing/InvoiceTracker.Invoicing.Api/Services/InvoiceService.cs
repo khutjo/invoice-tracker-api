@@ -1,3 +1,5 @@
+using InvoiceTracker.BuildingBlocks.Contracts.Events.InvoicingModels;
+using InvoiceTracker.BuildingBlocks.Messaging.Outbox;
 using InvoiceTracker.Invoicing.Api.Exceptions;
 using InvoiceTracker.Invoicing.Api.Interfaces;
 using InvoiceTracker.Invoicing.Api.Models.Request;
@@ -186,6 +188,8 @@ public sealed class InvoiceService(
             var invoiceNumber = await invoiceNumberAllocator.NextAsync(businessId, issueDate.Year, token);
             invoice.Send(invoiceNumber, issueDate, billedCustomer, userId, Now());
 
+            dbContext.AddOutboxMessage(ToInvoiceSent(invoice));
+
             await SaveAsync(token);
             await transaction.CommitAsync(token);
 
@@ -289,6 +293,30 @@ public sealed class InvoiceService(
         {
             throw InvoiceException.StaleVersion();
         }
+    }
+
+    private InvoiceSent ToInvoiceSent(Invoice invoice)
+    {
+        var billedCustomer = invoice.BilledCustomer
+            ?? throw new InvalidOperationException($"Sent invoice {invoice.Id} has no billed customer.");
+
+        return new InvoiceSent
+        {
+            OccurredAt = timeProvider.GetUtcNow(),
+            BusinessId = invoice.BusinessId,
+            InvoiceId = invoice.Id,
+            InvoiceNumber = invoice.InvoiceNumber
+                ?? throw new InvalidOperationException($"Sent invoice {invoice.Id} has no number."),
+            CustomerId = invoice.CustomerId,
+            CustomerName = billedCustomer.Name,
+            CustomerEmail = billedCustomer.Email,
+            IssueDate = invoice.IssueDate
+                ?? throw new InvalidOperationException($"Sent invoice {invoice.Id} has no issue date."),
+            DueDate = invoice.DueDate
+                ?? throw new InvalidOperationException($"Sent invoice {invoice.Id} has no due date."),
+            Total = invoice.Total,
+            Balance = invoice.Balance
+        };
     }
 
     private DateTime Now()

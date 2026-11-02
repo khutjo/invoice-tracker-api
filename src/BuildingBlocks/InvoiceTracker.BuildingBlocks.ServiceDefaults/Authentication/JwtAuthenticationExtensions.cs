@@ -38,6 +38,20 @@ public static class JwtAuthenticationExtensions
                     RoleClaimType = InvoiceTrackerClaimTypes.Role,
                     ClockSkew = TimeSpan.FromSeconds(30)
                 };
+
+                options.Events = new JwtBearerEvents
+                {
+                    OnMessageReceived = context =>
+                    {
+                        var accessToken = context.Request.Query["access_token"].ToString();
+                        if (!string.IsNullOrEmpty(accessToken) && context.Request.Path.StartsWithSegments("/hubs"))
+                        {
+                            context.Token = accessToken;
+                        }
+
+                        return Task.CompletedTask;
+                    }
+                };
             });
 
         services.AddAuthorizationBuilder()

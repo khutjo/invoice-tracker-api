@@ -1,3 +1,4 @@
+using InvoiceTracker.Notification.Infrastructure.Delivery;
 using InvoiceTracker.Notification.Infrastructure.Persistence;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
@@ -21,6 +22,8 @@ public static class DependencyInjection
 
         services.AddHealthChecks()
             .AddDbContextCheck<NotificationDbContext>(tags: ["ready"]);
+
+        services.AddScoped<INotificationSender, SimulatedNotificationSender>();
 
         return services;
     }

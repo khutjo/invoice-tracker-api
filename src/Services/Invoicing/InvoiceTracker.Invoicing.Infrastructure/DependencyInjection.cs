@@ -1,3 +1,4 @@
+using InvoiceTracker.BuildingBlocks.Messaging;
 using InvoiceTracker.Invoicing.Application.Customers;
 using InvoiceTracker.Invoicing.Application.Invoices;
 using InvoiceTracker.Invoicing.Application.Time;
@@ -31,6 +32,9 @@ public static class DependencyInjection
         services.AddScoped<IInvoiceNumberAllocator, InvoiceNumberAllocator>();
         services.TryAddSingleton(TimeProvider.System);
         services.AddSingleton<BusinessCalendar>();
+
+        services.AddMessaging();
+        services.AddOutboxPublisher<InvoicingDbContext>();
 
         AddCustomerDirectory(services);
 
