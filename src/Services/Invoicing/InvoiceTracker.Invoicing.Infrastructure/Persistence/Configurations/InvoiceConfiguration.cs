@@ -16,6 +16,9 @@ internal sealed class InvoiceConfiguration : IEntityTypeConfiguration<Invoice>
         builder.Property(i => i.InvoiceNumber).HasMaxLength(32);
         builder.Property(i => i.RowVersion).IsRowVersion();
 
+        // A number, not the enum name, so the overdue scanner can compare stages in SQL
+        builder.Property(i => i.ReminderStage).HasConversion<int>();
+
         // Frozen at send, stored on the invoice row itself (null columns while Draft)
         builder.OwnsOne(i => i.BilledCustomer, customer =>
         {

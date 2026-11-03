@@ -4,8 +4,10 @@ using InvoiceTracker.BuildingBlocks.ServiceDefaults.Database;
 using InvoiceTracker.BuildingBlocks.ServiceDefaults.HealthChecks;
 using InvoiceTracker.Invoicing.Api.Exceptions;
 using InvoiceTracker.Invoicing.Api.Interfaces;
+using InvoiceTracker.Invoicing.Api.Jobs;
 using InvoiceTracker.Invoicing.Api.OpenApi;
 using InvoiceTracker.Invoicing.Api.Services;
+using InvoiceTracker.Invoicing.Api.Webhooks;
 using InvoiceTracker.Invoicing.Infrastructure;
 using InvoiceTracker.Invoicing.Infrastructure.Persistence;
 using Scalar.AspNetCore;
@@ -23,6 +25,19 @@ builder.Services.AddInvoicingInfrastructure(builder.Configuration);
 
 builder.Services.AddScoped<IInvoiceService, InvoiceService>();
 builder.Services.AddScoped<IDashboardService, DashboardService>();
+
+builder.Services.AddOptions<OverdueScanOptions>()
+    .BindConfiguration(OverdueScanOptions.SectionName)
+    .ValidateDataAnnotations()
+    .ValidateOnStart();
+builder.Services.AddScoped<IOverdueScanService, OverdueScanService>();
+builder.Services.AddHostedService<OverdueScanner>();
+
+builder.Services.AddOptions<PaymentWebhookOptions>()
+    .BindConfiguration(PaymentWebhookOptions.SectionName)
+    .ValidateDataAnnotations()
+    .ValidateOnStart();
+builder.Services.AddScoped<IPaymentWebhookService, PaymentWebhookService>();
 
 var app = builder.Build();
 

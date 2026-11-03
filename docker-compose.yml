@@ -100,6 +100,8 @@ services:
     environment:
       <<: *service-env
       ConnectionStrings__InvoicingDb: "Server=sqlserver,1433;Database=invoicing_db;User Id=InvoiceTrackerUser;Password='${APP_DB_PASSWORD}';TrustServerCertificate=True"
+      PaymentWebhook__Secret: ${PAYMENT_WEBHOOK_SECRET:?PAYMENT_WEBHOOK_SECRET must be set in .env}
+      OverdueScan__AllowAsOfOverride: ${OVERDUE_SCAN_ALLOW_AS_OF:-true}
     depends_on: *service-deps
     restart: unless-stopped
 
