@@ -30,14 +30,9 @@
     <Project Path="src/Services/Notification/InvoiceTracker.Notification.Infrastructure/InvoiceTracker.Notification.Infrastructure.csproj" />
   </Folder>
   <Folder Name="/tests/">
-    <Project Path="tests/InvoiceTracker.BuildingBlocks.Contracts.Tests/InvoiceTracker.BuildingBlocks.Contracts.Tests.csproj" />
-    <Project Path="tests/InvoiceTracker.Business.Application.Tests/InvoiceTracker.Business.Application.Tests.csproj" />
     <Project Path="tests/InvoiceTracker.Business.Domain.Tests/InvoiceTracker.Business.Domain.Tests.csproj" />
-    <Project Path="tests/InvoiceTracker.Business.IntegrationTests/InvoiceTracker.Business.IntegrationTests.csproj" />
     <Project Path="tests/InvoiceTracker.Identity.IntegrationTests/InvoiceTracker.Identity.IntegrationTests.csproj" />
     <Project Path="tests/InvoiceTracker.Invoicing.Application.Tests/InvoiceTracker.Invoicing.Application.Tests.csproj" />
     <Project Path="tests/InvoiceTracker.Invoicing.Domain.Tests/InvoiceTracker.Invoicing.Domain.Tests.csproj" />
-    <Project Path="tests/InvoiceTracker.Invoicing.IntegrationTests/InvoiceTracker.Invoicing.IntegrationTests.csproj" />
-    <Project Path="tests/InvoiceTracker.Notification.IntegrationTests/InvoiceTracker.Notification.IntegrationTests.csproj" />
   </Folder>
 </Solution>

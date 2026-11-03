@@ -58,6 +58,12 @@ namespace InvoiceTracker.Notification.Infrastructure.Persistence.Migrations
                         .HasColumnType("nvarchar(200)")
                         .HasColumnName("customer_name");
 
+                    b.Property<string>("DeduplicationKey")
+                        .IsRequired()
+                        .HasMaxLength(64)
+                        .HasColumnType("nvarchar(64)")
+                        .HasColumnName("deduplication_key");
+
                     b.Property<Guid>("InvoiceId")
                         .HasColumnType("uniqueidentifier")
                         .HasColumnName("invoice_id");
@@ -100,12 +106,12 @@ namespace InvoiceTracker.Notification.Infrastructure.Persistence.Migrations
                     b.HasIndex("BusinessId", "CreatedAt")
                         .HasDatabaseName("ix_notifications_business_id_created_at");
 
-                    b.HasIndex("InvoiceId", "NotificationType")
-                        .IsUnique()
-                        .HasDatabaseName("uq_notifications_invoice_id_notification_type");
-
                     b.HasIndex("Status", "NextAttemptAt")
                         .HasDatabaseName("ix_notifications_status_next_attempt_at");
+
+                    b.HasIndex("InvoiceId", "NotificationType", "DeduplicationKey")
+                        .IsUnique()
+                        .HasDatabaseName("uq_notifications_invoice_id_notification_type_deduplication_key");
 
                     b.ToTable("notifications", (string)null);
                 });

@@ -40,7 +40,8 @@ public sealed class InvoiceService(
 
         if (query.OverdueOnly)
         {
-            invoices = invoices.Where(i => i.Status == InvoiceStatus.Overdue);
+            var today = businessCalendar.Today();
+            invoices = invoices.Where(i => i.Status == InvoiceStatus.Overdue || (i.Status == InvoiceStatus.Sent && i.DueDate < today));
         }
 
         if (query.CustomerId is { } customerId)

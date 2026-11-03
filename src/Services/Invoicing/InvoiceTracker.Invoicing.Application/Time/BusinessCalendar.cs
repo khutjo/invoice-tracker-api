@@ -11,7 +11,12 @@ public sealed class BusinessCalendar(TimeProvider timeProvider)
 
     public DateOnly Today()
     {
-        var local = TimeZoneInfo.ConvertTime(timeProvider.GetUtcNow(), _southAfrica);
+        return DateOf(timeProvider.GetUtcNow());
+    }
+
+    public static DateOnly DateOf(DateTimeOffset instant)
+    {
+        var local = TimeZoneInfo.ConvertTime(instant, _southAfrica);
         return DateOnly.FromDateTime(local.DateTime);
     }
 }

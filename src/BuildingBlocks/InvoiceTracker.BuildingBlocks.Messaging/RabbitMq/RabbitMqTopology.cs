@@ -13,7 +13,7 @@ public static class RabbitMqTopology
     public static readonly IReadOnlyDictionary<string, string[]> Queues = new Dictionary<string, string[]>
     {
         [BusinessQueue] = [nameof(BusinessRegistered)],
-        [NotificationQueue] = [nameof(EmailVerificationRequested), nameof(InvoiceSent)]
+        [NotificationQueue] = [nameof(EmailVerificationRequested), nameof(InvoiceSent), nameof(InvoiceOverdue), nameof(PaymentRecorded)]
     };
 
     public static async Task DeclareAsync(IChannel channel, CancellationToken cancellationToken)

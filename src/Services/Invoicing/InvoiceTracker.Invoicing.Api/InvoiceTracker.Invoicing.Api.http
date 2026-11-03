@@ -85,3 +85,24 @@ Content-Type: application/json
 ### Dashboard tiles for the caller's business
 GET {{Invoicing_HostAddress}}/api/v1/dashboard
 Authorization: Bearer {{accessToken}}
+
+### Run the overdue scan now for your business (Owner only)
+POST {{Invoicing_HostAddress}}/api/v1/admin/jobs/overdue-scan
+Authorization: Bearer {{accessToken}}
+
+### Run it as if today were a later date, to see the 7-day and 14-day reminders (needs OverdueScan:AllowAsOfOverride)
+POST {{Invoicing_HostAddress}}/api/v1/admin/jobs/overdue-scan?asOf=2026-12-20
+Authorization: Bearer {{accessToken}}
+
+### Payment webhook without a signature is refused with 401.
+### Send a signed one with scripts/simulate-payment.ps1, which computes the HMAC.
+POST {{Invoicing_HostAddress}}/api/v1/webhooks/payments
+Content-Type: application/json
+
+{
+  "eventId": "evt_unsigned",
+  "eventType": "payment.succeeded",
+  "invoiceId": "{{invoiceId}}",
+  "amount": 100.00,
+  "currency": "ZAR"
+}

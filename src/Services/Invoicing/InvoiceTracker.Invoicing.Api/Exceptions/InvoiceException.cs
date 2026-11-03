@@ -29,6 +29,11 @@ public sealed class InvoiceException(
             StatusCodes.Status409Conflict);
     }
 
+    public static InvoiceException InvalidWebhookSignature()
+    {
+        return new InvoiceException("The webhook signature is missing, invalid or expired.", StatusCodes.Status401Unauthorized);
+    }
+
     public static InvoiceException Invalid(string field, string error)
     {
         return Invalid(new Dictionary<string, string[]> { [field] = [error] });

@@ -41,6 +41,9 @@ public sealed class Invoice
     public decimal AmountPaid { get; private set; }
     public decimal Balance { get; private set; }
 
+    /// <summary>The last overdue reminder raised, so each stage is raised once however often the scanner runs.</summary>
+    public OverdueReminderStage ReminderStage { get; private set; } = OverdueReminderStage.None;
+
     public DateTime CreatedAt { get; private set; }
     public DateTime? ModifiedAt { get; private set; }
 
@@ -126,6 +129,94 @@ public sealed class Invoice
         DueDate = dueDate;
         ModifiedAt = now;
         Record(InvoiceEventType.Sent, sentBy, now, $"Sent as {invoiceNumber}, due {dueDate:yyyy-MM-dd}.");
+    }
+
+    public OverdueReminderStage? CheckOverdue(DateOnly today, DateTime now)
+    {
+        if (Status is not (InvoiceStatus.Sent or InvoiceStatus.Overdue) || DueDate is not { } dueDate || dueDate >= today)
+        {
+            return null;
+        }
+
+        if (Status == InvoiceStatus.Sent)
+        {
+            Status = InvoiceStatus.Overdue;
+            ModifiedAt = now;
+            Record(InvoiceEventType.MarkedOverdue, null, now, $"Due {dueDate:yyyy-MM-dd}, balance {Balance:0.00}.");
+        }
+
+        var stageDue = ReminderStageFor(DaysOverdue(today));
+
+        // A scanner that was down for a while jumps straight to the stage that is due now, without back-filling
+        if (stageDue <= ReminderStage)
+        {
+            return null;
+        }
+
+        ReminderStage = stageDue;
+        ModifiedAt = now;
+        Record(InvoiceEventType.ReminderRaised, null, now, $"{stageDue} reminder at {DaysOverdue(today)} days overdue.");
+
+        return stageDue;
+    }
+
+    public int DaysOverdue(DateOnly today)
+    {
+        return DueDate is { } dueDate && dueDate < today ? today.DayNumber - dueDate.DayNumber : 0;
+    }
+
+    public static OverdueReminderStage ReminderStageFor(int daysOverdue)
+    {
+        return daysOverdue switch
+        {
+            >= 14 => OverdueReminderStage.Final,
+            >= 7 => OverdueReminderStage.Second,
+            >= 1 => OverdueReminderStage.First,
+            _ => OverdueReminderStage.None
+        };
+    }
+
+
+    public Payment RecordPayment(
+        decimal amount,
+        DateOnly paidOn,
+        PaymentMethod method,
+        string? reference,
+        string? externalId,
+        Guid? recordedBy,
+        DateTime now)
+    {
+        if (Status is not (InvoiceStatus.Sent or InvoiceStatus.Overdue))
+        {
+            throw new InvoiceRuleException($"Payments can only be recorded against a sent or overdue invoice. This invoice is {Status}.");
+        }
+
+        if (amount <= 0)
+        {
+            throw new InvoiceRuleException("A payment must be more than zero.");
+        }
+
+        if (MoneyRounding.ToCents(amount) != amount)
+        {
+            throw new InvoiceRuleException("A payment is in whole cents.");
+        }
+
+        var payment = Payment.Create(amount, paidOn, method, reference, externalId, now);
+        _payments.Add(payment);
+
+        AmountPaid += amount;
+        Balance = Total - AmountPaid;
+        ModifiedAt = now;
+        Record(InvoiceEventType.PaymentRecorded, recordedBy, now, $"{amount:0.00} by {method}, balance {Balance:0.00}.");
+
+        // Paying more than is owed still settles the invoice; the negative balance is a credit due to the customer
+        if (Balance <= 0)
+        {
+            Status = InvoiceStatus.Paid;
+            Record(InvoiceEventType.Paid, recordedBy, now, Balance < 0 ? $"Paid in full, overpaid by {-Balance:0.00}." : "Paid in full.");
+        }
+
+        return payment;
     }
 
     private void SetDraftDetails(Guid customerId, int paymentTermsDays, IEnumerable<InvoiceLineDetails> lines)

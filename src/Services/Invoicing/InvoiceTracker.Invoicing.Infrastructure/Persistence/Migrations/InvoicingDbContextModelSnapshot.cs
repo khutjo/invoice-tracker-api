@@ -158,6 +158,11 @@ namespace InvoiceTracker.Invoicing.Infrastructure.Persistence.Migrations
                         .HasColumnType("int")
                         .HasColumnName("payment_terms_days");
 
+                    b.Property<int>("ReminderStage")
+                        .HasMaxLength(32)
+                        .HasColumnType("int")
+                        .HasColumnName("reminder_stage");
+
                     b.Property<byte[]>("RowVersion")
                         .IsConcurrencyToken()
                         .IsRequired()
@@ -324,6 +329,11 @@ namespace InvoiceTracker.Invoicing.Infrastructure.Persistence.Migrations
                         .HasColumnType("decimal(18,2)")
                         .HasColumnName("amount");
 
+                    b.Property<string>("ExternalId")
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)")
+                        .HasColumnName("external_id");
+
                     b.Property<Guid>("InvoiceId")
                         .HasColumnType("uniqueidentifier")
                         .HasColumnName("invoice_id");
@@ -349,6 +359,11 @@ namespace InvoiceTracker.Invoicing.Infrastructure.Persistence.Migrations
 
                     b.HasKey("Id")
                         .HasName("pk_payments");
+
+                    b.HasIndex("ExternalId")
+                        .IsUnique()
+                        .HasDatabaseName("uq_payments_external_id")
+                        .HasFilter("[external_id] IS NOT NULL");
 
                     b.HasIndex("InvoiceId")
                         .HasDatabaseName("ix_payments_invoice_id");
