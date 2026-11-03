@@ -41,7 +41,9 @@ builder.Services.AddOptions<PortalOptions>()
 builder.Services.AddMessaging();
 builder.Services.AddEventConsumer(RabbitMqTopology.NotificationQueue)
     .AddHandler<EmailVerificationRequested, EmailVerificationRequestedHandler>()
-    .AddHandler<InvoiceSent, InvoiceSentHandler>();
+    .AddHandler<InvoiceSent, InvoiceSentHandler>()
+    .AddHandler<InvoiceOverdue, InvoiceOverdueHandler>()
+    .AddHandler<PaymentRecorded, PaymentRecordedHandler>();
 
 builder.Services.AddHostedService<NotificationDispatcher>();
 

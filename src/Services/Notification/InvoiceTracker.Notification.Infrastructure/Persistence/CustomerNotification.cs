@@ -24,6 +24,13 @@ public sealed class CustomerNotification
 
     public string CustomerName { get; private set; } = string.Empty;
     public NotificationType NotificationType { get; private set; }
+
+    /// <summary>
+    /// Tells apart notifications of the same type on one invoice: the payment id for PaymentReceived,
+    /// so each partial payment gets its own message. Empty for one-per-invoice types such as reminders.
+    /// </summary>
+    public string DeduplicationKey { get; private set; } = string.Empty;
+
     public NotificationChannel Channel { get; private set; }
     public string Recipient { get; private set; } = string.Empty;
 
@@ -46,7 +53,8 @@ public sealed class CustomerNotification
         NotificationChannel channel,
         string recipient,
         string body,
-        DateTime createdAtUtc)
+        DateTime createdAtUtc,
+        string? deduplicationKey = null)
     {
         ArgumentException.ThrowIfNullOrWhiteSpace(invoiceNumber);
         ArgumentException.ThrowIfNullOrWhiteSpace(customerName);
@@ -61,6 +69,7 @@ public sealed class CustomerNotification
             InvoiceNumber = invoiceNumber,
             CustomerName = customerName,
             NotificationType = notificationType,
+            DeduplicationKey = deduplicationKey ?? string.Empty,
             Channel = channel,
             Recipient = recipient,
             Body = body,

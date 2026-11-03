@@ -23,10 +23,13 @@ public sealed class NotificationDbContext(DbContextOptions<NotificationDbContext
             notification.Property(n => n.InvoiceNumber).HasMaxLength(32);
             notification.Property(n => n.CustomerName).HasMaxLength(200);
 
-            // A reminder stage is created once per invoice, however often the event is redelivered
-            notification.HasIndex(n => new { n.InvoiceId, n.NotificationType })
+            notification.Property(n => n.DeduplicationKey).HasMaxLength(64);
+
+            // A reminder stage is created once per invoice, and a payment once per payment id,
+            // however often the event is redelivered
+            notification.HasIndex(n => new { n.InvoiceId, n.NotificationType, n.DeduplicationKey })
                 .IsUnique()
-                .HasDatabaseName("uq_notifications_invoice_id_notification_type");
+                .HasDatabaseName("uq_notifications_invoice_id_notification_type_deduplication_key");
 
             // The dispatcher claims Pending rows in batches
             notification.HasIndex(n => new { n.Status, n.NextAttemptAt })
