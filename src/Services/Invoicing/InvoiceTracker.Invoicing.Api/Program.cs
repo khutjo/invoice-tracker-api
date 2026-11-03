@@ -1,11 +1,13 @@
 using System.Text.Json.Serialization;
 using InvoiceTracker.BuildingBlocks.ServiceDefaults.Authentication;
+using InvoiceTracker.BuildingBlocks.ServiceDefaults.Database;
 using InvoiceTracker.BuildingBlocks.ServiceDefaults.HealthChecks;
 using InvoiceTracker.Invoicing.Api.Exceptions;
 using InvoiceTracker.Invoicing.Api.Interfaces;
 using InvoiceTracker.Invoicing.Api.OpenApi;
 using InvoiceTracker.Invoicing.Api.Services;
 using InvoiceTracker.Invoicing.Infrastructure;
+using InvoiceTracker.Invoicing.Infrastructure.Persistence;
 using Scalar.AspNetCore;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -23,6 +25,8 @@ builder.Services.AddScoped<IInvoiceService, InvoiceService>();
 builder.Services.AddScoped<IDashboardService, DashboardService>();
 
 var app = builder.Build();
+
+await app.MigrateDbContextAsync<InvoicingDbContext>();
 
 app.UseExceptionHandler();
 app.UseStatusCodePages();
@@ -42,4 +46,4 @@ app.UseAuthorization();
 app.MapControllers();
 app.MapDefaultHealthChecks();
 
-app.Run();
+await app.RunAsync();

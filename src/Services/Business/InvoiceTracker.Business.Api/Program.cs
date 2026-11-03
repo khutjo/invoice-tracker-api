@@ -3,6 +3,7 @@ using InvoiceTracker.BuildingBlocks.Contracts.Events.IdentityModels;
 using InvoiceTracker.BuildingBlocks.Messaging;
 using InvoiceTracker.BuildingBlocks.Messaging.RabbitMq;
 using InvoiceTracker.BuildingBlocks.ServiceDefaults.Authentication;
+using InvoiceTracker.BuildingBlocks.ServiceDefaults.Database;
 using InvoiceTracker.BuildingBlocks.ServiceDefaults.HealthChecks;
 using InvoiceTracker.Business.Api.Consumers;
 using InvoiceTracker.Business.Api.Exceptions;
@@ -10,6 +11,7 @@ using InvoiceTracker.Business.Api.Interfaces;
 using InvoiceTracker.Business.Api.OpenApi;
 using InvoiceTracker.Business.Api.Services;
 using InvoiceTracker.Business.Infrastructure;
+using InvoiceTracker.Business.Infrastructure.Persistence;
 using Scalar.AspNetCore;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -34,6 +36,8 @@ builder.Services.AddEventConsumer(RabbitMqTopology.BusinessQueue)
 
 var app = builder.Build();
 
+await app.MigrateDbContextAsync<BusinessDbContext>();
+
 app.UseExceptionHandler();
 app.UseStatusCodePages();
 
@@ -52,4 +56,4 @@ app.UseAuthorization();
 app.MapControllers();
 app.MapDefaultHealthChecks();
 
-app.Run();
+await app.RunAsync();

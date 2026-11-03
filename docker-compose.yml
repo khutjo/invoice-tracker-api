@@ -1,3 +1,18 @@
+# Settings every .NET service shares. Secrets come from .env; nothing secret lives in this file.
+x-service-env: &service-env
+  ASPNETCORE_ENVIRONMENT: Production
+  Database__MigrateOnStartup: "true"
+  Jwt__PublicKey: ${JWT_PUBLIC_KEY:?JWT_PUBLIC_KEY must be set in .env}
+  RabbitMq__HostName: rabbitmq
+  RabbitMq__Password: ${RABBITMQ_PASSWORD:?RABBITMQ_PASSWORD must be set in .env}
+
+# Services start once the app login exists and RabbitMQ answers; each one applies its own migrations.
+x-service-deps: &service-deps
+  sqlserver-init:
+    condition: service_completed_successfully
+  rabbitmq:
+    condition: service_healthy
+
 services:
   sqlserver:
     image: mcr.microsoft.com/mssql/server:2022-latest
@@ -52,6 +67,85 @@ services:
       start_period: 20s
       retries: 10
 
+  identity:
+    build:
+      context: .
+      dockerfile: src/Services/Identity/InvoiceTracker.Identity.Api/Dockerfile
+    container_name: invoice-tracker-identity
+    environment:
+      <<: *service-env
+      ConnectionStrings__IdentityDb: "Server=sqlserver,1433;Database=identity_db;User Id=InvoiceTrackerUser;Password='${APP_DB_PASSWORD}';TrustServerCertificate=True"
+      Jwt__SigningKey: ${JWT_SIGNING_KEY:?JWT_SIGNING_KEY must be set in .env}
+    depends_on: *service-deps
+    restart: unless-stopped
+
+  business:
+    build:
+      context: .
+      dockerfile: src/Services/Business/InvoiceTracker.Business.Api/Dockerfile
+    container_name: invoice-tracker-business
+    environment:
+      <<: *service-env
+      ConnectionStrings__BusinessDb: "Server=sqlserver,1433;Database=business_db;User Id=InvoiceTrackerUser;Password='${APP_DB_PASSWORD}';TrustServerCertificate=True"
+    volumes:
+      - business-logos:/app/App_Data/logos
+    depends_on: *service-deps
+    restart: unless-stopped
+
+  invoicing:
+    build:
+      context: .
+      dockerfile: src/Services/Invoicing/InvoiceTracker.Invoicing.Api/Dockerfile
+    container_name: invoice-tracker-invoicing
+    environment:
+      <<: *service-env
+      ConnectionStrings__InvoicingDb: "Server=sqlserver,1433;Database=invoicing_db;User Id=InvoiceTrackerUser;Password='${APP_DB_PASSWORD}';TrustServerCertificate=True"
+    depends_on: *service-deps
+    restart: unless-stopped
+
+  notification:
+    build:
+      context: .
+      dockerfile: src/Services/Notification/InvoiceTracker.Notification.Api/Dockerfile
+    container_name: invoice-tracker-notification
+    environment:
+      <<: *service-env
+      ConnectionStrings__NotificationDb: "Server=sqlserver,1433;Database=notification_db;User Id=InvoiceTrackerUser;Password='${APP_DB_PASSWORD}';TrustServerCertificate=True"
+      Portal__BaseUrl: ${PORTAL_BASE_URL:-http://localhost:9000}
+    depends_on: *service-deps
+    restart: unless-stopped
+
+  # Single API entry point. Published on 5165, the port the web dev server already proxies to.
+  gateway:
+    build:
+      context: .
+      dockerfile: src/Gateway/InvoiceTracker.Gateway/Dockerfile
+    container_name: invoice-tracker-gateway
+    environment:
+      ASPNETCORE_ENVIRONMENT: Production
+      Portal__BaseUrl: ${PORTAL_BASE_URL:-http://localhost:9000}
+    ports:
+      - "5165:8080"
+    depends_on:
+      - identity
+      - business
+      - invoicing
+      - notification
+    restart: unless-stopped
+
+  # The portal. Builds from the web repo on GitHub; set WEB_BUILD_CONTEXT=../invoice-tracker-web in .env
+  # to build your local checkout instead. nginx serves the SPA and proxies /api and /hubs to the gateway.
+  web:
+    build:
+      context: ${WEB_BUILD_CONTEXT:-https://github.com/khutjo/invoice-tracker-web.git#main}
+    container_name: invoice-tracker-web
+    ports:
+      - "9000:80"
+    depends_on:
+      - gateway
+    restart: unless-stopped
+
 volumes:
   sqlserver-data:
   rabbitmq-data:
+  business-logos:

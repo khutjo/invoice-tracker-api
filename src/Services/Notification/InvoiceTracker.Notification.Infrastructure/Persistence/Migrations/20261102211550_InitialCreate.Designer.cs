@@ -12,7 +12,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace InvoiceTracker.Notification.Infrastructure.Persistence.Migrations
 {
     [DbContext(typeof(NotificationDbContext))]
-    [Migration("20261021190754_InitialCreate")]
+    [Migration("20261102211550_InitialCreate")]
     partial class InitialCreate
     {
         /// <inheritdoc />
@@ -55,9 +55,21 @@ namespace InvoiceTracker.Notification.Infrastructure.Persistence.Migrations
                         .HasColumnType("datetime2")
                         .HasColumnName("created_at");
 
+                    b.Property<string>("CustomerName")
+                        .IsRequired()
+                        .HasMaxLength(200)
+                        .HasColumnType("nvarchar(200)")
+                        .HasColumnName("customer_name");
+
                     b.Property<Guid>("InvoiceId")
                         .HasColumnType("uniqueidentifier")
                         .HasColumnName("invoice_id");
+
+                    b.Property<string>("InvoiceNumber")
+                        .IsRequired()
+                        .HasMaxLength(32)
+                        .HasColumnType("nvarchar(32)")
+                        .HasColumnName("invoice_number");
 
                     b.Property<DateTime?>("NextAttemptAt")
                         .HasColumnType("datetime2")

@@ -1,8 +1,10 @@
+using InvoiceTracker.BuildingBlocks.ServiceDefaults.Database;
 using InvoiceTracker.BuildingBlocks.ServiceDefaults.HealthChecks;
 using InvoiceTracker.Identity.Api.Exceptions;
 using InvoiceTracker.Identity.Api.Interfaces;
 using InvoiceTracker.Identity.Api.Services;
 using InvoiceTracker.Identity.Infrastructure;
+using InvoiceTracker.Identity.Infrastructure.Persistence;
 using Scalar.AspNetCore;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -18,6 +20,8 @@ builder.Services.AddScoped<IRegisterService, RegisterService>();
 
 var app = builder.Build();
 
+await app.MigrateDbContextAsync<IdentityServiceDbContext>();
+
 app.UseExceptionHandler();
 app.UseStatusCodePages();
 
@@ -31,4 +35,4 @@ if (app.Environment.IsDevelopment())
 app.MapControllers();
 app.MapDefaultHealthChecks();
 
-app.Run();
+await app.RunAsync();
